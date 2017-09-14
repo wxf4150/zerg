@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"flag"
-	pb "github.com/huichen/zerg/protos"
+	pb "github.com/wxf4150/zerg/protos"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -13,6 +13,11 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"io"
+	"compress/gzip"
+	"bufio"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding/htmlindex"
 )
 
 var (
@@ -67,6 +72,7 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 		req.Header.Add("Content-Type", in.BodyType)
 		req.Header.Add("Content-Length", strconv.Itoa(len(in.PostBody)))
 	}
+	req.Header.Set("Accept-Encoding", "gzip") //使用gzip
 
 	// 充填 header
 	for _, header := range in.Header {
@@ -75,6 +81,7 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 
 	// 发送请求
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +91,36 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 	if in.Method != pb.Method_HEAD {
 		// 读取页面内容
 		var err error
-		body, err = ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
+		var reader io.ReadCloser
+		switch resp.Header.Get("Content-Encoding") {
+		case "gzip":
+			//		fmt.Println("from gzip")
+			reader, err = gzip.NewReader(resp.Body)
+			if err != nil {
+				return nil,err
+			}
+			defer reader.Close()
+		default: reader = resp.Body
+		}
+
+		charset:="utf-8"
+		if in.ExpectCharset!=""{
+			charset=in.ExpectCharset
+		}
+
+		var body []byte
+		//body, err = ioutil.ReadAll(resp.Body)
+		if charset=="utf-8"{
+			body, err = ioutil.ReadAll(reader)
+		}else{
+			utf_8reader,err1 :=decode(reader,charset)
+			err=err1
+			if err==nil{
+				body, err = ioutil.ReadAll(utf_8reader)
+			}
+		}
+
+
 		if err != nil {
 			return nil, err
 		}
@@ -111,4 +146,35 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 	response.Metadata.StatusCode = int32(resp.StatusCode)
 
 	return &response, nil
+}
+
+
+func detectContentCharset(body io.Reader) string {
+	r := bufio.NewReader(body)
+	if data, err := r.Peek(1024); err == nil {
+		if _, name, ok := charset.DetermineEncoding(data, ""); ok {
+			return name
+		}
+	}
+	return "utf-8"
+}
+
+// Decode parses the HTML body on the specified encoding and
+// returns the HTML Document.
+func decode(body io.Reader, charset string) (io.Reader, error) {
+	//log.Println("charset",charset)
+	if charset=="auto" || charset == "" {
+		charset = detectContentCharset(body)
+	}
+	//log.Println("charset",charset)
+	e, err := htmlindex.Get(charset)
+	if err != nil {
+		return nil, err
+	}
+
+	if name, _ := htmlindex.Name(e); name != "utf-8" {
+		body = e.NewDecoder().Reader(body)
+	}
+
+	return body, nil
 }

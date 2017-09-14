@@ -27,6 +27,9 @@ message CrawlRequest {
   // POST body，仅当请求类型为 POST 时有效
   string post_body = 8;
   string body_type = 9;
+
+  //163.com: gbk;  空白==utf-8; 自动检查 auto,网页内容为<meta>写的不标准时, 会返回utf-8;
+  string expect_charset = 10;
 }
 
 enum Method {

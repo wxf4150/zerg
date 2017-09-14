@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	pb "github.com/huichen/zerg/protos"
+	pb "github.com/wxf4150/zerg/protos"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
@@ -29,6 +29,7 @@ func main() {
 		Url:     *url,
 		Timeout: 10000,
 		Method:  pb.Method(pb.Method_value[*method]),
+		ExpectCharset:"",  //163.com gbk.   default:utf-8
 	}
 	response, err := client.Crawl(context.Background(), &request)
 	if err != nil {
@@ -38,4 +39,5 @@ func main() {
 	log.Printf("抓取完毕")
 	log.Printf("%+v", response.Metadata)
 	log.Printf("%d", len(response.Content))
+	log.Printf("%s", response.Content)
 }

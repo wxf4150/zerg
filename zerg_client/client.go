@@ -2,7 +2,7 @@ package zerg_client
 
 import (
 	"errors"
-	"github.com/huichen/load_balanced_service"
+	"github.com/wxf4150/load_balanced_service"
 	pb "github.com/huichen/zerg/protos"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -46,7 +46,7 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 		return nil, errors.New("ZergClient 没有初始化")
 	}
 
-	node, err := zc.lbService.GetNode()
+	node, err := zc.lbService.GetNode(true)
 	if err != nil {
 		return nil, err
 	}

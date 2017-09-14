@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	pb "github.com/huichen/zerg/protos"
-	"github.com/huichen/zerg/zerg_client"
+	pb "github.com/wxf4150/zerg/protos"
+	"github.com/wxf4150/zerg/zerg_client"
 	"log"
 )
 
@@ -29,6 +29,7 @@ func main() {
 		Url:     *url,
 		Timeout: 10000, // 超时 10 秒
 		Method:  pb.Method(pb.Method_value[*method]),
+		ExpectCharset:"gbk",
 	}
 	response, err := zc.Crawl(&request)
 	if err != nil {
