@@ -46,7 +46,7 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 		return nil, errors.New("ZergClient 没有初始化")
 	}
 
-	node, err := zc.lbService.GetNode(true)
+	node, err := zc.lbService.GetNode(true )
 	if err != nil {
 		return nil, err
 	}
