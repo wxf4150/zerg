@@ -1,0 +1,50 @@
+FROM alpine:latest
+
+ADD etcd /usr/local/bin/
+ADD etcdctl /usr/local/bin/
+RUN mkdir -p /var/etcd/
+RUN mkdir -p /var/lib/etcd/
+
+# Alpine Linux doesn't use pam, which means that there is no /etc/nsswitch.conf,
+# but Golang relies on /etc/nsswitch.conf to check the order of DNS resolving
+# (see https://github.com/golang/go/commit/9dee7771f561cf6aee081c0af6658cc81fac3918)
+# To fix this we just create /etc/nsswitch.conf and add the following line:
+RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
+
+# EXPOSE 2379 2380
+
+# Define default command.
+CMD ["/usr/local/bin/etcd"]
+
+
+
+
+
+# docker build -t unmerged/etcd -f bin/etcd_release_Dockerfile bin/
+# start up etcd
+
+# portpeer=`docker port etcd 2380 | cut -d':' -f2`
+# [[ -z  $portpeer  ]] && echo "can't get peer port 2380 on host" && exit
+# portclient=`docker port etcd 2379 | cut -d':' -f2`
+#[[ -z  $portclient  ]] && echo "can't get client port 2379 on host" && exit
+#
+# docker stop etcd
+# #rm -rf /tmp/etcd-data.tmp && \
+#  docker run \
+#  --rm -d \
+#  -p 2379:2379 \
+#  -p 2380:2380 \
+#  --name etcd \
+#  --volume=/tmp/etcd-data.tmp:/etcd-data \
+#  unmerged/etcd \
+#  /usr/local/bin/etcd \
+#  --name my-etcd-1 \
+#  --data-dir /etcd-data \
+#  --listen-client-urls http://0.0.0.0:2379 \
+#  --advertise-client-urls http://0.0.0.0:2379 \
+#  --listen-peer-urls http://0.0.0.0:2380 \
+#  --initial-advertise-peer-urls http://0.0.0.0:2380 \
+#  --initial-cluster my-etcd-1=http://0.0.0.0:2380 \
+#  --initial-cluster-token my-etcd-token \
+#  --initial-cluster-state new
+

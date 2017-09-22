@@ -20,6 +20,7 @@
 我把 etcd 容器化了，并开发了脚本使得部署 etcd cluster 非常容易，见 [github.com/huichen/etcd_docker](https://github.com/huichen/etcd_docker)
 
 为了容灾，请至少在三台服务器上运行 etcd 实例。为了方便调用，你可以固定 etc endpoint 的端口号，并在所有机器上手工添加 etcd host 的 hostname。
+*直接从etcd 官网下载相关文件,按官网demo来更简单*
 
 #### 第二步：启动 registrator 服务发现程序
 

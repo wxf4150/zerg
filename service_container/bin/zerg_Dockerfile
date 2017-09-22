@@ -1,0 +1,5 @@
+FROM alpine
+EXPOSE 5000
+ADD /service /service
+RUN mkdir /log
+CMD ./service --address :5000  >>/log/zerg.log 2>&1

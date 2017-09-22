@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	address = flag.String("address", ":50051F", "服务器地址")
+	address = flag.String("address", ":50051", "服务器地址")
 )
 
 func main() {
@@ -82,10 +82,10 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 
 	// 发送请求
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	// 只有当 method 不为 HEAD 时才读取页面内容
 	var body []byte
