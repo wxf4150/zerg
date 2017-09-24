@@ -58,7 +58,7 @@ THIS_NAME=${NAME_4}
 THIS_IP=${HOST_4}
 nohup /opt/tools/etcd/etcd --data-dir=/data/etcd --name ${THIS_NAME} \
 --initial-advertise-peer-urls http://${THIS_IP}:2380 --listen-peer-urls http://${THIS_IP}:2380 \
---advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379 \
+--advertise-client-urls http://${THIS_IP}:2379 --listen-client-urls http://${THIS_IP}:2379 \
 --initial-cluster ${CLUSTER} \
 --initial-cluster-state ${CLUSTER_STATE} --initial-cluster-token ${TOKEN} \
 >> /data/etcd/log.log 2>&1 &

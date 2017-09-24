@@ -2,7 +2,7 @@
 
 #CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/service
 #docker build -t unmerged/zerg -f bin/zerg_Dockerfile bin/
-rsync -auv service_container/bin/service kfmtest:/opt/tools/
+rsync -auv --exclude=/log/ bin/ kfmtest:/opt/tools/
 
 set -x
 docker stop zerg
@@ -10,13 +10,13 @@ docker stop zerg
 #etcd  should start first
 
 #registrator service
-docker   stop registrator & docker   rm registrator
+docker   stop registrator ; docker   rm registrator
 #HOSTIP=133.1.11.116
 #HOSTIP=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'` \
 
 . /opt/tools/setip.sh && \
 docker run -d --name=registrator --net=host --volume=/var/run/docker.sock:/tmp/docker.sock \
-  gliderlabs/registrator -ip $HOSTIP   etcd://0.0.0.0:2379/services
+gliderlabs/registrator -ip \$HOSTIP   etcd://0.0.0.0:2379/services
 
 
 docker  stop zerg
