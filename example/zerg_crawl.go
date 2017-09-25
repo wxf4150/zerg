@@ -33,7 +33,7 @@ func main() {
 		ExpectCharset:"gbk",
 	}
 
-	for i:=0;i<count;i++ {
+	for i:=0;i<*count;i++ {
 
 		response, err := zc.Crawl(&request)
 		if err != nil {

@@ -86,7 +86,7 @@ nohup /opt/tools/etcd/etcd --data-dir=/data/etcd --name ${THIS_NAME} \
 >> /data/etcd/log.log 2>&1 &
 
 
-#my local test
+#本地单节点 test
 #
 NAME_1=wxfhost
 HOST_1=133.1.11.116
@@ -95,12 +95,17 @@ THIS_IP=${HOST_1}
 CLUSTER=${NAME_1}=http://${HOST_1}:2380
 CLUSTER_STATE=new
 TOKEN=token-01
-
-echo "\
+HOSTIP=${HOST_1}
 nohup /opt/tools/etcd/etcd --data-dir=/data/etcd --name ${THIS_NAME} \
 	--initial-advertise-peer-urls http://${THIS_IP}:2380 --listen-peer-urls http://${THIS_IP}:2380 \
 	--advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379 \
 	--initial-cluster ${CLUSTER} \
-	--initial-cluster-state ${CLUSTER_STATE} --initial-cluster-token ${TOKEN} > /data/etcd/log.log 2>&1 &\
-	"
+	--initial-cluster-state ${CLUSTER_STATE} --initial-cluster-token ${TOKEN} > /data/etcd/log.log 2>&1 &
+
+docker stop registrator; docker rm registrator;\
+docker run -d --name=registrator --net=host --volume=/var/run/docker.sock:/tmp/docker.sock \
+gliderlabs/registrator -ip $HOSTIP   etcd://$HOSTIP:2379/services
+
+docker stop zerg; docker rm zerg; \
+docker run -d  -P -v /data/logs/:/log --name zerg   unmerged/zerg
 

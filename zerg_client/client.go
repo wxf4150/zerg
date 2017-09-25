@@ -3,7 +3,7 @@ package zerg_client
 import (
 	"errors"
 	"github.com/wxf4150/load_balanced_service"
-	pb "github.com/huichen/zerg/protos"
+	pb "github.com/wxf4150/zerg/protos"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"strings"
