@@ -15,7 +15,7 @@ HOST_4=172.17.165.228
 NAME_5=machine-5
 HOST_5=172.17.165.231
 CLUSTER=${NAME_1}=http://${HOST_1}:2380,${NAME_2}=http://${HOST_2}:2380,${NAME_3}=http://${HOST_3}:2380,${NAME_4}=http://${HOST_4}:2380
-Endpoints=${HOST_1}:2379,${HOST_2}:2379,${HOST_3}:2379,${HOST_4}:2379
+Endpoints=http://${HOST_1}:2379,http://${HOST_2}:2379,http://${HOST_3}:2379,http://${HOST_4}:2379
 echo $CLUSTER
 #Run this on each machine:
 
@@ -76,13 +76,14 @@ HOST_5=172.17.165.231
 #. /opt/tools/g.sh
 THIS_NAME=${NAME_5}
 THIS_IP=${HOST_5}
+
 CLUSTER_STATE=existing
 nohup /opt/tools/etcd/etcd --data-dir=/data/etcd --name ${THIS_NAME} \
-    --initial-advertise-peer-urls http://${THIS_IP}:2380 --listen-peer-urls http://${THIS_IP}:2380 \
-	--advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379 \
-	--initial-cluster ${CLUSTER} \
-	--initial-cluster-state ${CLUSTER_STATE} --initial-cluster-token ${TOKEN} \
-	>> /data/etcd/log.log 2>&1 &
+--initial-advertise-peer-urls http://${THIS_IP}:2380 --listen-peer-urls http://${THIS_IP}:2380 \
+--advertise-client-urls http://${THIS_IP}:2379 --listen-client-urls http://${THIS_IP}:2379 \
+--initial-cluster ${CLUSTER} \
+--initial-cluster-state ${CLUSTER_STATE} --initial-cluster-token ${TOKEN} \
+>> /data/etcd/log.log 2>&1 &
 
 
 #my local test

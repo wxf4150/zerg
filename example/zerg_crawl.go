@@ -11,6 +11,7 @@ var (
 	endPoints   = flag.String("endpoints", "", "半角逗号分隔的 etcd 接入点列表，每个接入点地址以 http:// 开始")
 	serviceName = flag.String("service_name", "/services/zerg", "zerg 服务名")
 	method      = flag.String("method", "GET", "HTTP 请求类型：GET HEAD POST")
+	count      = flag.Int("count", 1, "请求次数")
 	url         = flag.String("url", "", "URL")
 )
 
@@ -31,13 +32,17 @@ func main() {
 		Method:  pb.Method(pb.Method_value[*method]),
 		ExpectCharset:"gbk",
 	}
-	response, err := zc.Crawl(&request)
-	if err != nil {
-		// 处理异常
-		log.Fatal(err)
-	}
 
-	// 处理返回结果
-	log.Printf("metadata = %+v", response.Metadata)
-	log.Printf("page content length = %d", len(response.Content))
+	for i:=0;i<count;i++ {
+
+		response, err := zc.Crawl(&request)
+		if err != nil {
+			// 处理异常
+			log.Fatal(err)
+		}
+		// 处理返回结果
+		log.Printf("metadata = %+v", response.Metadata)
+		log.Printf("page content length = %d", len(response.Content))
+		log.Printf("page content:%s",response.Content)
+	}
 }

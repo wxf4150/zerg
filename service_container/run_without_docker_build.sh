@@ -8,3 +8,4 @@ docker run --rm -d -p 4128:4128  -v `pwd`/docker/:/app --name zerg alpine sh -c 
 
 #for test
 #go run example/single_machine_crawl.go --address :4128 --url http://baidu.com
+#go run example/zerg_crawl.go --endpoints $Endpoint --url http://2017.ip138.com/ic.asp
