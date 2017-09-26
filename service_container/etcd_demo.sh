@@ -96,6 +96,7 @@ CLUSTER=${NAME_1}=http://${HOST_1}:2380
 CLUSTER_STATE=new
 TOKEN=token-01
 HOSTIP=${HOST_1}
+Endpoints=http://${HOST_1}:2379
 nohup /opt/tools/etcd/etcd --data-dir=/data/etcd --name ${THIS_NAME} \
 	--initial-advertise-peer-urls http://${THIS_IP}:2380 --listen-peer-urls http://${THIS_IP}:2380 \
 	--advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379 \

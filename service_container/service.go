@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"time"
 	"io"
-	"compress/gzip"
 	"bufio"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding/htmlindex"
@@ -73,15 +72,15 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 		req.Header.Add("Content-Type", in.BodyType)
 		req.Header.Add("Content-Length", strconv.Itoa(len(in.PostBody)))
 	}
-	req.Header.Set("Accept-Encoding", "gzip") //使用gzip
 
 	// 充填 header
 	for _, header := range in.Header {
-		req.Header.Add(header.Key, header.Value)
+		req.Header.Set(header.Key, header.Value)
 	}
+	log.Println(req.Header)
 
 	// 发送请求
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -92,17 +91,6 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 	if in.Method != pb.Method_HEAD {
 		// 读取页面内容
 		var err error
-		var reader io.ReadCloser
-		switch resp.Header.Get("Content-Encoding") {
-		case "gzip":
-			//		fmt.Println("from gzip")
-			reader, err = gzip.NewReader(resp.Body)
-			if err != nil {
-				return nil,err
-			}
-			defer reader.Close()
-		default: reader = resp.Body
-		}
 
 		charset:="utf-8"
 		if in.ExpectCharset!=""{
@@ -112,15 +100,14 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 		var body []byte
 		//body, err = ioutil.ReadAll(resp.Body)
 		if charset=="utf-8"{
-			body, err = ioutil.ReadAll(reader)
+			body, err = ioutil.ReadAll(resp.Body)
 		}else{
-			utf_8reader,err1 :=decode(reader,charset)
+			utf_8reader,err1 :=decode(resp.Body,charset)
 			err=err1
 			if err==nil{
 				body, err = ioutil.ReadAll(utf_8reader)
 			}
 		}
-
 
 		if err != nil {
 			return nil, err

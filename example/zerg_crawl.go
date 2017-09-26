@@ -33,6 +33,8 @@ func main() {
 		ExpectCharset:"gbk",
 	}
 
+	request.Header=append(request.Header)
+	request.Header=append(request.Header,&pb.KV{"Accept-Encoding",""})
 	for i:=0;i<*count;i++ {
 
 		response, err := zc.Crawl(&request)
