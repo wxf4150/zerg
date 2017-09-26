@@ -22,7 +22,7 @@ import (
 var (
 	address = flag.String("address", ":50051", "服务器地址")
 )
-
+const version=1.0
 func main() {
 	flag.Parse()
 
@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("无法绑定地址: %v", err)
 	}
 
-	log.Println("server start at:",*address)
+	log.Println("server start at:",*address,"version",version)
 	s := grpc.NewServer()
 	pb.RegisterCrawlServer(s, &server{})
 	s.Serve(lis)
