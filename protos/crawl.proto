@@ -45,7 +45,7 @@ message KV {
 
 message CrawlResponse {
   Metadata metadata = 1;
-  string content = 2;
+  bytes content = 2;
 }
 
 message Metadata {

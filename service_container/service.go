@@ -115,7 +115,7 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 
 		// 充填 response
 		if !in.OnlyReturnMetadata {
-			response.Content = string(body)
+			response.Content = body //string()
 		}
 	}
 
