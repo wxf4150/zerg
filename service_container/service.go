@@ -32,7 +32,7 @@ func main() {
 	}
 
 	log.Println("server start at:",*address,"version",version)
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.MaxSendMsgSize(1<<25))
 	pb.RegisterCrawlServer(s, &server{})
 	s.Serve(lis)
 }
@@ -77,7 +77,7 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 	for _, header := range in.Header {
 		req.Header.Set(header.Key, header.Value)
 	}
-	log.Println(req.Header)
+	//log.Println(req.Header)
 
 	// 发送请求
 	resp, err := http.DefaultClient.Do(req)

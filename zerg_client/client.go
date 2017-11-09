@@ -61,7 +61,11 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 		zc.clients[node] = client
 	}
 
-	return zc.clients[node].Crawl(context.Background(), in, opts...)
+	res,err:=zc.clients[node].Crawl(context.Background(), in, opts...)
+	if err!=nil{
+		err=errors.New(err.Error()+"NodeName:"+node)
+	}
+	return res,err
 }
 
 func (zc *ZergClient) Close() {
