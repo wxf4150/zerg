@@ -53,4 +53,5 @@ message Metadata {
   repeated KV header = 3;
   string status = 4;
   int32 status_code = 5;
+  string url = 6;
 }

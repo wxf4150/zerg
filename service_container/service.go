@@ -133,6 +133,10 @@ func (s *server) internalCrawl(in *pb.CrawlRequest) (*pb.CrawlResponse, error) {
 	response.Metadata.Status = resp.Status
 	response.Metadata.StatusCode = int32(resp.StatusCode)
 
+	if resp.Request.URL.String()!=in.Url{
+		response.Metadata.Url=resp.Request.URL.String()
+	}
+
 	return &response, nil
 }
 
