@@ -66,7 +66,7 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 
 	res,err:=zc.clients[node].Crawl(context.Background(), in, opts...)
 	if err!=nil{
-		if retrys<3 strings.HasPrefix( err.Error(),"rpc error: code = Unavailable desc = grpc: the connection is unavailable"){
+		if retrys<3 && strings.HasPrefix( err.Error(),"rpc error: code = Unavailable desc = grpc: the connection is unavailable"){
 			log.Println("ZergClient: Unavailable grpc conn;nodeName:"+node+" url:"+in.Url)
 			retrys++;
 			goto RETRY
