@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"strings"
+	"log"
 )
 
 type ZergClient struct {
@@ -46,6 +47,8 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 		return nil, errors.New("ZergClient 没有初始化")
 	}
 
+	retrys:=0
+	RETRY:
 	node, err := zc.lbService.GetNode(true )
 	if err != nil {
 		return nil, err
@@ -63,6 +66,11 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 
 	res,err:=zc.clients[node].Crawl(context.Background(), in, opts...)
 	if err!=nil{
+		if retrys<3 strings.HasPrefix( err.Error(),"rpc error: code = Unavailable desc = grpc: the connection is unavailable"){
+			log.Println("ZergClient: Unavailable grpc conn;nodeName:"+node+" url:"+in.Url)
+			retrys++;
+			goto RETRY
+		}
 		err=errors.New(err.Error()+"NodeName:"+node+" url:"+in.Url)
 	}
 	return res,err
