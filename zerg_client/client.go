@@ -55,7 +55,7 @@ func (zc *ZergClient) Crawl(in *pb.CrawlRequest, opts ...grpc.CallOption) (*pb.C
 	}
 
 	if _, ok := zc.conns[node]; !ok {
-		conn, err := grpc.Dial(node, grpc.WithInsecure())
+		conn, err := grpc.Dial(node, grpc.WithInsecure(),grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1<<32)))
 		if err != nil {
 			return nil, err
 		}

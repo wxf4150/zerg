@@ -32,7 +32,7 @@ func main() {
 	}
 
 	log.Println("server start at:",*address,"version",version)
-	s := grpc.NewServer(grpc.MaxSendMsgSize(1<<25))
+	s := grpc.NewServer(grpc.MaxRecvMsgSize(1<<28))
 	pb.RegisterCrawlServer(s, &server{})
 	s.Serve(lis)
 }
